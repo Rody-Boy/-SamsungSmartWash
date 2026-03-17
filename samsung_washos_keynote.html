@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samsung Wash OS — Keynote</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@200;300;400;500;600;700&display=swap');
+
+  :root{
+    --black:#000;--deep:#021008;--navy:#0a1a14;--card:#0c1a16;
+    --blue:#2196f3;--blue-bright:#42a5f5;--blue-glow:#1976d2;
+    --blue-dim:#0d47a1;--cyan:#40c4ff;
+    --green:#4caf50;--green-bright:#66bb6a;--green-dim:#1b5e20;
+    --teal:#00897b;--accent-grad:linear-gradient(135deg,#2196f3,#4caf50);
+    --white:#e8f5e9;--gray:#6e8a7a;--dim:#3a5045;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'DM Sans',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased;}
+
+  /* ══════ STAGE — fills any screen ══════ */
+  #stage{position:relative;width:100vw;height:100vh;overflow:hidden;background:var(--black);}
+
+  .scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:3vh 4vw;opacity:0;pointer-events:none;transition:opacity 2.4s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+  .scene.active{opacity:1;pointer-events:auto;}
+
+  .mist{position:absolute;width:4px;height:4px;background:rgba(30,144,255,.25);border-radius:50%;animation:mistFloat 14s ease-in-out infinite;pointer-events:none;}
+  @keyframes mistFloat{0%{transform:translate(0,0);opacity:0;}15%{opacity:.5;}50%{transform:translate(var(--mx),var(--my));opacity:.15;}100%{transform:translate(var(--ex),var(--ey));opacity:0;}}
+
+  /* Shared */
+  .accent{color:var(--green-bright);}
+
+  /* ══════ SC1 — OPENING (cinematic water + washers) ══════ */
+  #sc1{background:radial-gradient(ellipse at 50% 80%,#061a12 0%,#021008 40%,var(--black) 100%);flex-direction:column;}
+
+  /* — Water surface layers — */
+  .sc1-water{position:absolute;inset:0;overflow:hidden;z-index:0;}
+
+  .sc1-wave{
+    position:absolute;bottom:-2vw;left:-5%;width:110%;height:10vw;
+    background:transparent;
+    border-radius:45% 42% 0 0;
+    opacity:0;
+    animation:waveRise 3s ease forwards, waveDrift 8s ease-in-out infinite;
+  }
+  .sc1-wave:nth-child(1){background:rgba(30,144,255,.04);animation-delay:0s,3s;height:11vw;bottom:-3vw;}
+  .sc1-wave:nth-child(2){background:rgba(30,144,255,.03);animation-delay:.6s,3.6s;height:9vw;bottom:-2vw;border-radius:40% 48% 0 0;}
+  .sc1-wave:nth-child(3){background:rgba(30,144,255,.025);animation-delay:1.2s,4.2s;height:8vw;bottom:-1.5vw;border-radius:50% 38% 0 0;}
+  @keyframes waveRise{0%{opacity:0;transform:translateY(3vw);}100%{opacity:1;transform:translateY(0);}}
+  @keyframes waveDrift{0%,100%{transform:translateX(0) scaleY(1);}25%{transform:translateX(-1.5%) scaleY(1.08);}75%{transform:translateX(1.5%) scaleY(.94);}}
+
+  /* Horizontal water streaks — flowing across the 12m wall */
+  .sc1-streak{
+    position:absolute;height:1px;
+    background:linear-gradient(90deg,transparent 0%,rgba(30,144,255,.12) 20%,rgba(61,165,255,.08) 50%,transparent 100%);
+    animation:streakFlow 12s linear infinite;
+    opacity:0;
+  }
+  @keyframes streakFlow{0%{transform:translateX(-100%);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateX(100vw);opacity:0;}}
+
+  /* Ripple rings — subtle concentric from center */
+  .sc1-ripple{
+    position:absolute;left:50%;top:65%;border-radius:50%;
+    border:1px solid rgba(30,144,255,.06);
+    transform:translate(-50%,-50%) scale(.3);opacity:0;
+    animation:rippleOut 6s ease-out infinite;
+  }
+  .sc1-ripple:nth-child(1){width:20vw;height:10vw;animation-delay:0s;}
+  .sc1-ripple:nth-child(2){width:35vw;height:17vw;animation-delay:2s;}
+  .sc1-ripple:nth-child(3){width:52vw;height:26vw;animation-delay:4s;}
+  @keyframes rippleOut{0%{transform:translate(-50%,-50%) scale(.3);opacity:0;}20%{opacity:.6;}100%{transform:translate(-50%,-50%) scale(1.4);opacity:0;}}
+
+  /* Ambient water glow at the bottom */
+  .sc1-water-glow{
+    position:absolute;bottom:-4vw;left:50%;transform:translateX(-50%);
+    width:80%;height:12vw;border-radius:50%;
+    background:radial-gradient(ellipse,rgba(76,175,80,.06) 0%,rgba(33,150,243,.03) 40%,transparent 70%);
+    animation:waterGlow 5s ease-in-out infinite;
+  }
+  @keyframes waterGlow{0%,100%{opacity:.5;transform:translateX(-50%) scaleX(1);}50%{opacity:1;transform:translateX(-50%) scaleX(1.1);}}
+
+  /* — Washer machines — slowly rotating, spread across width — */
+  .sc1-washer{
+    position:absolute;z-index:1;
+    opacity:0;
+    animation:washerFade 4s ease forwards;
+  }
+  .sc1-washer:nth-child(1){left:5%;top:20%;animation-delay:.5s;}
+  .sc1-washer:nth-child(2){left:22%;top:45%;animation-delay:1.2s;}
+  .sc1-washer:nth-child(3){right:22%;top:35%;animation-delay:1.8s;}
+  .sc1-washer:nth-child(4){right:5%;top:18%;animation-delay:2.4s;}
+  .sc1-washer:nth-child(5){left:40%;top:60%;animation-delay:3s;}
+  @keyframes washerFade{0%{opacity:0;transform:scale(.85);}100%{opacity:1;transform:scale(1);}}
+
+  .washer-body{
+    width:6vw;height:7.5vw;border-radius:.8vw;
+    border:1px solid rgba(76,175,80,.12);
+    background:linear-gradient(170deg,rgba(10,26,18,.5),rgba(6,16,10,.6));
+    display:flex;align-items:center;justify-content:center;position:relative;
+    box-shadow:0 0 3vw rgba(30,144,255,.04);
+    backdrop-filter:blur(2px);
+  }
+  .washer-panel{
+    position:absolute;top:.5vw;left:50%;transform:translateX(-50%);
+    width:2.8vw;height:.25vw;border-radius:.15vw;
+    background:rgba(76,175,80,.12);
+  }
+  .washer-dot{
+    position:absolute;top:.6vw;width:.3vw;height:.3vw;border-radius:50%;
+    background:rgba(76,175,80,.12);
+  }
+  .washer-dot.wdl{left:1vw;}.washer-dot.wdr{right:1vw;}
+  .washer-drum{
+    width:3.6vw;height:3.6vw;border-radius:50%;
+    border:1.5px solid rgba(76,175,80,.2);
+    box-shadow:inset 0 0 1.2vw rgba(76,175,80,.06);
+    position:relative;display:flex;align-items:center;justify-content:center;
+    animation:drumSlow 20s linear infinite;
+  }
+  .washer-drum::after{
+    content:'';width:1.2vw;height:1.2vw;border-radius:50%;
+    border:1px solid rgba(30,144,255,.12);
+  }
+  /* Cross lines inside drum */
+  .drum-x{position:absolute;background:rgba(76,175,80,.08);}
+  .drum-x.h{width:100%;height:1px;top:50%;}
+  .drum-x.v{height:100%;width:1px;left:50%;}
+  @keyframes drumSlow{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+
+  /* Vary rotation speeds per washer */
+  .sc1-washer:nth-child(1) .washer-drum{animation-duration:22s;}
+  .sc1-washer:nth-child(2) .washer-drum{animation-duration:18s;animation-direction:reverse;}
+  .sc1-washer:nth-child(3) .washer-drum{animation-duration:25s;}
+  .sc1-washer:nth-child(4) .washer-drum{animation-duration:20s;animation-direction:reverse;}
+  .sc1-washer:nth-child(5) .washer-drum{animation-duration:16s;}
+
+  /* Vary sizes for depth */
+  .sc1-washer:nth-child(1) .washer-body{width:5vw;height:6.2vw;opacity:.6;}
+  .sc1-washer:nth-child(1) .washer-drum{width:3vw;height:3vw;}
+  .sc1-washer:nth-child(2) .washer-body{width:6.5vw;height:8vw;opacity:.8;}
+  .sc1-washer:nth-child(2) .washer-drum{width:4vw;height:4vw;}
+  .sc1-washer:nth-child(3) .washer-body{width:6vw;height:7.5vw;opacity:.7;}
+  .sc1-washer:nth-child(4) .washer-body{width:5.2vw;height:6.5vw;opacity:.55;}
+  .sc1-washer:nth-child(4) .washer-drum{width:3.1vw;height:3.1vw;}
+  .sc1-washer:nth-child(5) .washer-body{width:4.5vw;height:5.6vw;opacity:.4;}
+  .sc1-washer:nth-child(5) .washer-drum{width:2.6vw;height:2.6vw;}
+
+  /* Water droplets floating up from washers */
+  .sc1-drop{
+    position:absolute;width:3px;height:3px;border-radius:50%;
+    background:rgba(30,144,255,.3);
+    animation:dropUp 6s ease-in-out infinite;
+    pointer-events:none;z-index:1;
+  }
+  @keyframes dropUp{
+    0%{transform:translateY(0) scale(1);opacity:0;}
+    15%{opacity:.5;}
+    60%{opacity:.2;}
+    100%{transform:translateY(calc(var(--dy))) translateX(calc(var(--dx))) scale(.3);opacity:0;}
+  }
+
+  /* — Center text — */
+  .sc1-logo-img{height:16.8vw;opacity:0;transform:translateY(1.5vw) scale(.9);transition:all 3s cubic-bezier(.25,.46,.45,.94);z-index:10;filter:drop-shadow(0 0 3vw rgba(76,175,80,.25)) drop-shadow(0 0 6vw rgba(33,150,243,.1));}
+  .sc1-logo-img.on{opacity:1;transform:translateY(0) scale(1);}
+  .sc1-samsung{font-weight:300;font-size:1.68vw;letter-spacing:2.1vw;text-transform:uppercase;color:var(--gray);opacity:0;transform:translateY(10px);transition:all 2.8s ease;z-index:10;}
+  .sc1-samsung.on{opacity:.7;transform:translateY(0);}
+  .sc1-sub{font-weight:300;font-size:1.26vw;letter-spacing:0.7vw;text-transform:uppercase;color:var(--gray);margin-top:1vw;opacity:0;transition:opacity 3s ease;z-index:10;}
+  .sc1-sub.on{opacity:.6;}
+
+  /* ══════ SC2 — UNIVERSAL TRUTH ══════ */
+  #sc2{background:var(--black);}
+  .sc2-col{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:100%;height:100%;padding-left:8%;padding-right:4%;}
+  .sc2-section1{display:flex;flex-direction:column;align-items:flex-start;transition:opacity 1.5s ease;}
+  .sc2-section1.off{opacity:0;}
+  .hero-line{font-family:'Bebas Neue',sans-serif;font-size:7.7vw;letter-spacing:0.42vw;line-height:1.15;opacity:0;transform:translateY(16px);transition:all 2.4s cubic-bezier(.25,.46,.45,.94);}
+  .hero-line.on{opacity:1;transform:translateY(0);}
+  .sc2-fade{font-family:'Bebas Neue',sans-serif;font-size:7.7vw;line-height:1.15;text-align:center;letter-spacing:0.42vw;opacity:0;transition:all 2.5s cubic-bezier(.25,.46,.45,.94);position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);pointer-events:none;}
+  .sc2-fade.on{opacity:1;transform:translateY(-50%);}
+  .sc2-fade .accent-text{color:var(--green-bright);}
+  @media (max-aspect-ratio:2.5/1){
+    .hero-line{font-size:clamp(45px,11.2vh,140px);}
+    .sc2-fade{font-size:clamp(45px,11.2vh,140px);}
+  }
+  @media (max-aspect-ratio:1/1){
+    .sc2-col{padding-left:6%;}
+    .sc2-fade{left:0;right:0;}
+    .hero-line{font-size:clamp(39px,9.8vw,84px);}
+    .sc2-fade{font-size:clamp(39px,9.8vw,84px);}
+  }
+
+
+  /* GoodApps logo styling */
+  .goodapps-logo{height:3.08vw;vertical-align:middle;margin-left:.4vw;}
+  .sc1-sub .goodapps-logo{height:2.52vw;}
+
+  /* SC5 powered by */
+  .sc5-powered{font-size:1.12vw;letter-spacing:0.56vw;text-transform:uppercase;color:var(--gray);margin-top:2vw;opacity:0;transition:opacity 3s ease;z-index:2;}
+  .sc5-powered.on{opacity:.6;}
+  .sc5-powered .goodapps-logo{height:2.8vw;}
+
+  /* SC11 — new closing layout */
+  .sc11-washos-logo{opacity:0;transform:translateY(10px);transition:all 3.2s ease;z-index:2;}
+  .sc11-washos-logo.on{opacity:1;transform:translateY(0);}
+  .sc11-washos-logo .washos-logo{height:22vw;opacity:1;transform:scale(1);filter:drop-shadow(0 0 4vw rgba(76,175,80,.35)) drop-shadow(0 0 8vw rgba(33,150,243,.2));}
+  .sc11-ecosystem{font-family:'Bebas Neue',sans-serif;font-size:2.8vw;letter-spacing:0.7vw;color:var(--white);margin-top:2vw;opacity:0;transform:translateY(10px);transition:all 2.5s ease;z-index:2;}
+  .sc11-ecosystem.on{opacity:.8;transform:translateY(0);}
+  .sc11-eco-flow{display:flex;align-items:center;gap:1.5vw;margin-top:1.5vw;opacity:0;transform:translateY(10px);transition:all 2.5s ease;z-index:2;}
+  .sc11-eco-flow.on{opacity:1;transform:translateY(0);}
+  .sc11-eco-node{font-size:1.26vw;letter-spacing:0.21vw;text-transform:uppercase;color:var(--white);padding:.6vw 1.2vw;border:1px solid var(--green);border-radius:.4vw;background:rgba(76,175,80,.06);}
+  .sc11-eco-hub{border-color:var(--green-bright);color:var(--green-bright);background:rgba(76,175,80,.12);}
+  .sc11-eco-arrow{color:var(--green);font-size:1.68vw;}
+  .sc11-powered{font-size:1.26vw;letter-spacing:0.56vw;text-transform:uppercase;color:var(--gray);margin-top:2vw;opacity:0;transition:opacity 3s ease;z-index:2;}
+  .sc11-powered.on{opacity:.6;}
+  .sc11-powered .goodapps-logo{height:3.08vw;}
+
+  /* ══════ SC3 — INDUSTRY GAP (illustrated) ══════ */
+  #sc3{background:var(--deep);flex-direction:column;}
+  .sp-w{display:flex;width:80%;height:62%;gap:0;border-radius:1vw;overflow:hidden;position:relative;}
+  .sp-h{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;transition:all 2.2s ease;}
+  .sp-h.on{opacity:1;}
+  .sp-L{background:linear-gradient(135deg,#1a1714,#0d0b08);}
+  .sp-R{background:linear-gradient(135deg,#081a12,#041008);}
+
+  /* Left side — old laundromat scene */
+  .old-scene{width:80%;height:70%;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .old-storefront{width:90%;height:75%;background:linear-gradient(180deg,#2a2520 0%,#1a1510 100%);border-radius:.6vw;border:1px solid #3a3025;display:flex;flex-direction:column;align-items:center;overflow:hidden;position:relative;}
+  .old-awning{width:100%;height:1.2vw;background:linear-gradient(180deg,#4a3a28,#3a2a18);border-radius:.6vw .6vw 0 0;}
+  .old-sign{font-size:0.91vw;letter-spacing:0.28vw;text-transform:uppercase;color:#7a6a55;margin-top:.4vw;font-weight:600;}
+  .old-window{width:85%;height:55%;margin-top:.5vw;background:linear-gradient(180deg,#352f25,#252018);border:1px solid #4a4035;border-radius:.3vw;display:flex;align-items:center;justify-content:center;gap:.6vw;padding:.5vw;}
+  .old-washer{width:2.5vw;height:3.2vw;background:#3a3530;border-radius:.35vw;border:1px solid #4a4035;display:flex;align-items:center;justify-content:center;position:relative;}
+  .old-washer::before{content:'';position:absolute;top:.3vw;width:1.2vw;height:.2vw;background:#4a4035;border-radius:.1vw;}
+  .old-washer-drum{width:1.5vw;height:1.5vw;border-radius:50%;border:1px solid #5a5045;margin-top:.3vw;}
+  .old-floor{width:100%;height:.3vw;background:#2a2520;margin-top:auto;}
+  .old-filter{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.4) 100%);animation:oldFade 6s ease 2s forwards;}
+  @keyframes oldFade{to{background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.5) 100%);filter:saturate(.5) brightness(.7);}}
+
+  /* Right side — modern app/phone */
+  .new-scene{width:80%;height:80%;display:flex;align-items:center;justify-content:center;position:relative;}
+  .new-phone{width:7vw;height:13vw;border-radius:.8vw;border:1.5px solid rgba(76,175,80,.3);background:linear-gradient(170deg,#0a1a14,#061008);display:flex;flex-direction:column;align-items:center;padding:.8vw .5vw .6vw;gap:.3vw;box-shadow:0 0 3vw rgba(76,175,80,.1),0 0 6vw rgba(33,150,243,.05);animation:phonePulse 4s ease-in-out infinite;position:relative;overflow:hidden;}
+  @keyframes phonePulse{0%,100%{box-shadow:0 0 2vw rgba(76,175,80,.08);}50%{box-shadow:0 0 4vw rgba(76,175,80,.2),0 0 6vw rgba(33,150,243,.08);}}
+  .new-phone-notch{width:2vw;height:.2vw;border-radius:.15vw;background:rgba(76,175,80,.2);}
+  .new-phone-map{width:90%;height:45%;border-radius:.3vw;background:linear-gradient(160deg,#0d2a1a,#0a1a12);border:1px solid rgba(76,175,80,.12);margin-top:.3vw;position:relative;overflow:hidden;}
+  .new-phone-dot{position:absolute;width:.3vw;height:.3vw;border-radius:50%;background:var(--green);box-shadow:0 0 .4vw rgba(76,175,80,.4);}
+  .new-phone-dot:nth-child(1){top:25%;left:30%;}
+  .new-phone-dot:nth-child(2){top:50%;left:60%;}
+  .new-phone-dot:nth-child(3){top:70%;left:40%;}
+  .new-phone-line{width:80%;height:.25vw;border-radius:.15vw;background:rgba(76,175,80,.15);}
+  .new-phone-line:nth-child(6){width:60%;}
+  .new-phone-btn{width:60%;height:1vw;border-radius:.5vw;background:linear-gradient(90deg,var(--blue),var(--green));box-shadow:0 0 1vw rgba(76,175,80,.2);margin-top:auto;margin-bottom:.3vw;}
+  .new-glow-ring{position:absolute;width:12vw;height:12vw;border-radius:50%;border:1px solid rgba(76,175,80,.06);animation:glowRing 5s ease-in-out infinite;}
+  .new-glow-ring:nth-child(2){width:16vw;height:16vw;animation-delay:1.5s;}
+  @keyframes glowRing{0%,100%{transform:scale(1);opacity:.4;}50%{transform:scale(1.08);opacity:.15;}}
+
+  .sp-tag{position:absolute;bottom:.8vw;font-size:0.98vw;letter-spacing:0.42vw;text-transform:uppercase;color:var(--gray);z-index:2;}
+  .sp-divider{position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,rgba(76,175,80,.15),rgba(33,150,243,.15),transparent);z-index:3;}
+  .vs-b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:3.92vw;height:3.92vw;background:var(--deep);border:1px solid rgba(76,175,80,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.98vw;letter-spacing:0.21vw;color:var(--green);z-index:5;box-shadow:0 0 1.5vw rgba(76,175,80,.15);}
+  .sc3-gap-text{font-family:'Bebas Neue',sans-serif;font-size:3.36vw;letter-spacing:0.28vw;text-align:center;margin-top:2vw;max-width:90%;opacity:0;transform:translateY(10px);transition:all 2.4s ease;z-index:2;}
+  .sc3-gap-text.on{opacity:1;transform:translateY(0);}
+  .sc3-gap-text .dim-text{color:var(--gray);}
+
+  /* ══════ SC4 — THE OPPORTUNITY ══════ */
+  #sc4{background:var(--black);flex-direction:column;}
+  .sc4-flow{display:flex;align-items:center;justify-content:center;gap:2.5vw;margin-bottom:2vw;}
+  .sc4-icon{width:12.6vw;height:12.6vw;border-radius:1.2vw;border:1.5px solid rgba(76,175,80,.22);background:linear-gradient(160deg,#0a1a14,#061008);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.3vw;opacity:0;transform:scale(.7);transition:all 1.8s cubic-bezier(.25,.46,.45,.94);box-shadow:0 0 2vw rgba(76,175,80,.04);}
+  .sc4-icon.on{opacity:1;transform:scale(1);box-shadow:0 0 3vw rgba(76,175,80,.1);}
+  .sc4-icon svg{width:4.9vw;height:4.9vw;}
+  .sc4-icon-lbl{font-size:1.26vw;letter-spacing:0.21vw;text-transform:uppercase;color:var(--gray);}
+  .sc4-arrow{font-size:2.24vw;color:var(--green);opacity:0;transition:opacity 2s ease;}
+  .sc4-arrow.on{opacity:.6;}
+  .sc4-q{font-family:'Bebas Neue',sans-serif;font-size:6.3vw;letter-spacing:0.35vw;text-align:center;line-height:1.15;max-width:85%;opacity:0;transform:translateY(14px);transition:all 2.8s ease;}
+  .sc4-q.on{opacity:1;transform:translateY(0);}
+
+  /* ══════ SC5 — WASH OS REVEAL ══════ */
+  #sc5{background:var(--black);flex-direction:column;}
+  .burst{position:absolute;width:70.0vw;height:70.0vw;border-radius:50%;background:radial-gradient(circle,rgba(76,175,80,.25) 0%,rgba(33,150,243,.15) 40%,transparent 70%);opacity:0;transform:scale(.1);transition:all 2.8s cubic-bezier(.16,1,.3,1);}
+  .burst.on{opacity:1;transform:scale(1.6);}
+  .burst.dim{opacity:0;transition:opacity 3.5s ease;}
+  .washos-logo{height:19.6vw;opacity:0;transform:scale(2.8);transition:all 2.8s cubic-bezier(.16,1,.3,1);filter:drop-shadow(0 0 4vw rgba(76,175,80,.3)) drop-shadow(0 0 8vw rgba(33,150,243,.15));z-index:2;}
+  .washos-logo.on{opacity:1;transform:scale(1);}
+  .washos-sub{font-size:1.4vw;letter-spacing:0.84vw;text-transform:uppercase;color:var(--gray);margin-top:2vw;opacity:0;transition:opacity 3s ease;z-index:2;}
+  .washos-sub.on{opacity:.6;}
+  .scatter{position:absolute;width:4px;height:4px;background:var(--green-bright);border-radius:50%;opacity:0;}
+
+  /* ══════ SC6 — ECOSYSTEM (orbital circle) ══════ */
+  #sc6{background:var(--deep);flex-direction:column;}
+  .sc6-lbl{font-size:2.52vw;letter-spacing:0.84vw;text-transform:uppercase;color:var(--gray);margin-bottom:1.8vw;opacity:0;transition:all 2s ease;z-index:3;}
+  .sc6-lbl.on{opacity:.55;}
+
+  /* Orbital container */
+  .eco-orbit{position:relative;width:42vw;height:42vw;max-width:80vh;max-height:80vh;}
+
+  /* Center hub */
+  .eco-hub-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.5);width:14vw;height:14vw;border-radius:50%;border:2px solid rgba(76,175,80,.4);background:radial-gradient(circle,rgba(10,26,18,.9) 0%,rgba(6,16,10,.95) 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5vw;opacity:0;transition:all 2.2s cubic-bezier(.25,.46,.45,.94);box-shadow:0 0 4vw rgba(76,175,80,.15),0 0 8vw rgba(76,175,80,.05);z-index:3;}
+  .eco-hub-center.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  .eco-hub-center svg{width:3.5vw;height:3.5vw;}
+  .eco-hub-center .eco-node-lbl{font-size:1.4vw;font-weight:600;letter-spacing:0.2vw;text-transform:uppercase;color:var(--green-bright);}
+
+  /* Rotating ring around hub */
+  .eco-ring{position:absolute;left:50%;top:50%;width:18vw;height:18vw;transform:translate(-50%,-50%);border-radius:50%;border:1px dashed rgba(76,175,80,.1);animation:ecoRingSpin 30s linear infinite;z-index:1;pointer-events:none;}
+  .eco-ring:nth-child(2){width:20vw;height:20vw;animation-direction:reverse;animation-duration:40s;border-color:rgba(33,150,243,.06);}
+  @keyframes ecoRingSpin{0%{transform:translate(-50%,-50%) rotate(0);}100%{transform:translate(-50%,-50%) rotate(360deg);}}
+
+  /* Orbital nodes — positioned at 120° intervals around the hub */
+  .eco-node{position:absolute;width:12vw;height:12vw;border-radius:50%;border:1.5px solid rgba(76,175,80,.2);background:linear-gradient(160deg,#0a1a14,#061008);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5vw;opacity:0;transform:scale(.6);transition:all 2s cubic-bezier(.25,.46,.45,.94);z-index:3;}
+  .eco-node.on{opacity:1;transform:scale(1);}
+  .eco-node svg{width:3vw;height:3vw;flex-shrink:0;}
+  .eco-node-lbl{font-size:1.26vw;font-weight:600;letter-spacing:0.18vw;text-transform:uppercase;color:var(--white);text-align:center;line-height:1.3;}
+
+  /* Node positions: top, bottom-left, bottom-right */
+  .eco-node.eco-pos-top{left:50%;top:0;transform:translate(-50%,0) scale(.6);}
+  .eco-node.eco-pos-top.on{transform:translate(-50%,0) scale(1);}
+  .eco-node.eco-pos-bl{left:0;bottom:2vw;transform:translate(0,0) scale(.6);}
+  .eco-node.eco-pos-bl.on{transform:translate(0,0) scale(1);}
+  .eco-node.eco-pos-br{right:0;bottom:2vw;transform:translate(0,0) scale(.6);}
+  .eco-node.eco-pos-br.on{transform:translate(0,0) scale(1);}
+
+  /* Connecting arcs — SVG lines from each node to hub */
+  .eco-connectors{position:absolute;inset:0;z-index:2;pointer-events:none;}
+  .eco-connectors svg{width:100%;height:100%;}
+  .eco-arc{stroke:var(--green);stroke-width:1.5;fill:none;opacity:0;transition:opacity 2s ease;stroke-dasharray:6 4;}
+  .eco-arc.on{opacity:.35;animation:arcFlow 3s linear infinite;}
+  @keyframes arcFlow{0%{stroke-dashoffset:0;}100%{stroke-dashoffset:-30;}}
+
+  /* Glow dots traveling along arcs */
+  .eco-dot{fill:var(--green-bright);opacity:0;transition:opacity 1.5s ease;}
+  .eco-dot.on{opacity:.6;animation:dotPulse 2s ease-in-out infinite;}
+  @keyframes dotPulse{0%,100%{opacity:.3;r:3;}50%{opacity:.8;r:5;}}
+
+  /* ══════ SC7 — CUSTOMER EXPERIENCE (screenshots) ══════ */
+  #sc7{background:var(--black);flex-direction:column;}
+  .sc7-lbl{font-size:1.82vw;letter-spacing:0.7vw;text-transform:uppercase;color:var(--gray);margin-bottom:1.5vw;opacity:0;transition:all 2s ease;z-index:2;}
+  .sc7-lbl.on{opacity:.55;}
+  .sc7-phones{display:flex;align-items:center;justify-content:center;gap:3vw;}
+  .sc7-phone-card{display:flex;flex-direction:column;align-items:center;gap:.8vw;opacity:0;transform:translateY(1.5vw) scale(.9);transition:all 1.2s cubic-bezier(.25,.46,.45,.94);}
+  .sc7-phone-card.on{opacity:.45;transform:translateY(0) scale(.9);}
+  .sc7-phone-card.featured{opacity:1;transform:translateY(-.8vw) scale(1.15);z-index:5;}
+  .sc7-phone-frame{
+    width:12.6vw;height:23.8vw;border-radius:1vw;overflow:hidden;
+    border:2px solid rgba(76,175,80,.15);
+    box-shadow:0 0 1.5vw rgba(76,175,80,.04),0 .4vw 2vw rgba(0,0,0,.4);
+    background:#061008;
+    transition:all 1.2s cubic-bezier(.25,.46,.45,.94);
+  }
+  .sc7-phone-card.featured .sc7-phone-frame{
+    border-color:rgba(76,175,80,.4);
+    box-shadow:0 0 4vw rgba(76,175,80,.2),0 0 8vw rgba(76,175,80,.08),0 .6vw 3vw rgba(0,0,0,.5);
+  }
+  .sc7-screenshot{width:100%;height:100%;object-fit:cover;object-position:center top;}
+  .sc7-phone-label{
+    font-size:1.05vw;font-weight:600;letter-spacing:0.21vw;text-transform:uppercase;
+    color:var(--gray);text-align:center;
+    transition:all 1.2s ease;
+  }
+  .sc7-phone-card.featured .sc7-phone-label{color:var(--green-bright);}
+
+  /* ══════ SC8 — SHOP OPERATIONS ══════ */
+  #sc8{background:var(--deep);flex-direction:column;}
+  .sc8-ttl{font-family:'Bebas Neue',sans-serif;font-size:5.6vw;letter-spacing:0.28vw;text-align:center;line-height:1.15;max-width:85%;opacity:0;transform:translateY(14px);transition:all 2.4s ease;}
+  .sc8-ttl.on{opacity:1;transform:translateY(0);}
+  .ops-grid{display:flex;gap:2vw;margin-top:2.5vw;justify-content:center;max-width:90%;}
+  .ops-card{width:14.5vw;padding:2vw 1.2vw;border-radius:1vw;border:1px solid rgba(76,175,80,.12);background:rgba(6,16,8,.7);text-align:center;opacity:0;transform:translateY(12px);transition:all 1.8s ease;}
+  .ops-card.on{opacity:1;transform:translateY(0);}
+  .ops-card svg{width:5.04vw;height:5.04vw;margin-bottom:.8vw;}
+  .ops-card-lbl{font-size:1.54vw;font-weight:600;letter-spacing:0.17vw;text-transform:uppercase;color:var(--white);}
+
+  /* ══════ SC9 — SMART MACHINES ══════ */
+  #sc9{background:var(--black);}
+  .sc9-left{display:flex;align-items:center;justify-content:center;width:30%;height:100%;position:relative;flex-shrink:0;}
+  .sc9-machines{display:flex;gap:1.2vw;}
+  .sc9-machine{width:7.5vw;height:9.8vw;background:linear-gradient(170deg,#0d2a1a,#061510);border-radius:1vw;border:1.5px solid rgba(76,175,80,.22);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 3vw rgba(76,175,80,.06);opacity:0;transform:scale(.8);transition:all 2.2s ease;}
+  .sc9-machine.on{opacity:1;transform:scale(1);}
+  .sc9-drum{width:4.2vw;height:4.2vw;border-radius:50%;border:2.5px solid rgba(76,175,80,.3);animation:dSpin 7s linear infinite;box-shadow:inset 0 0 1vw rgba(76,175,80,.08);position:relative;}
+  .sc9-drum::after{content:'';position:absolute;width:1.2vw;height:1.2vw;border-radius:50%;border:1.5px solid rgba(76,175,80,.2);top:50%;left:50%;transform:translate(-50%,-50%);}
+  @keyframes dSpin{0%{transform:rotate(0);border-color:rgba(76,175,80,.28);}50%{border-color:rgba(76,175,80,.5);}100%{transform:rotate(360deg);border-color:rgba(76,175,80,.28);}}
+  .sc9-panel{position:absolute;top:.8vw;left:50%;transform:translateX(-50%);width:3vw;height:.3vw;border-radius:.2vw;background:rgba(76,175,80,.15);}
+  .sc9-glow-line{position:absolute;width:2px;height:1.8vw;background:linear-gradient(180deg,var(--green),transparent);top:-2vw;left:50%;opacity:0;animation:glowPulse 3s ease-in-out infinite;}
+  .sc9-machine.on .sc9-glow-line{opacity:.5;}
+  @keyframes glowPulse{0%,100%{opacity:.3;height:1.5vw;}50%{opacity:.7;height:2.2vw;}}
+  .sc9-right{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:65%;padding-left:3vw;padding-right:2vw;overflow:hidden;}
+  .sc9-lbl{font-size:1.4vw;letter-spacing:0.7vw;text-transform:uppercase;color:var(--green-bright);margin-bottom:1vw;opacity:0;transition:all 2s ease;}
+  .sc9-lbl.on{opacity:.7;}
+  .sc9-words{display:flex;flex-wrap:wrap;gap:1.5vw 3vw;}
+  .sc9-word{font-family:'Bebas Neue',sans-serif;font-size:5.5vw;letter-spacing:0.28vw;color:var(--green-bright);opacity:0;transform:translateY(14px);transition:all 2s ease;line-height:1;}
+  .sc9-word.on{opacity:1;transform:translateY(0);}
+  .sc9-sub{font-size:1.5vw;color:var(--gray);letter-spacing:0.28vw;text-transform:uppercase;margin-top:1.2vw;opacity:0;transition:opacity 2.5s ease;}
+  .sc9-sub.on{opacity:.5;}
+  @media (max-aspect-ratio:1.5/1){
+    #sc9{flex-direction:column;}
+    .sc9-left{width:100%;height:auto;padding:2vh 0;}
+    .sc9-right{width:100%;padding:0;align-items:center;text-align:center;}
+    .sc9-words{justify-content:center;}
+  }
+
+  /* ══════ SC10 — INDUSTRY TRANSFORMATION ══════ */
+  #sc10{background:var(--deep);flex-direction:column;}
+  .map-bg{position:absolute;width:100%;height:100%;overflow:hidden;opacity:0;transition:opacity 3s ease;}
+  .map-bg.on{opacity:1;}
+  .map-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(76,175,80,.12);}
+  .map-line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(76,175,80,.12),transparent);transform-origin:left center;}
+  .map-pulse{position:absolute;width:8px;height:8px;border-radius:50%;background:rgba(76,175,80,.25);animation:mapP 3.5s ease-in-out infinite;}
+  @keyframes mapP{0%,100%{transform:scale(1);opacity:.25;}50%{transform:scale(2.5);opacity:0;}}
+  .sc10-hero{font-family:'Bebas Neue',sans-serif;font-size:7.7vw;letter-spacing:0.42vw;text-align:center;line-height:1.15;max-width:85%;opacity:0;transform:translateY(18px);transition:all 2.8s ease;z-index:2;}
+  .sc10-hero.on{opacity:1;transform:translateY(0);}
+
+  /* ══════ SC11 — CLOSING ══════ */
+  #sc11{background:var(--black);flex-direction:column;}
+  .sc11-glow{position:absolute;width:42.0vw;height:42.0vw;border-radius:50%;background:radial-gradient(circle,rgba(76,175,80,.08) 0%,rgba(33,150,243,.05) 40%,transparent 70%);opacity:0;transition:opacity 3.5s ease;}
+  .sc11-glow.on{opacity:1;}
+  .sc11-logos{display:flex;align-items:center;justify-content:center;gap:2.5vw;opacity:0;transform:translateY(10px);transition:all 3.2s ease;z-index:2;}
+  .sc11-logos.on{opacity:1;transform:translateY(0);}
+
+  .sc11-plus{font-size:2.8vw;color:var(--gray);font-weight:200;}
+  .sc11-washos-img{height:8.4vw;filter:drop-shadow(0 0 2vw rgba(76,175,80,.2));}
+  .sc11-title{font-family:'Bebas Neue',sans-serif;font-size:4.9vw;letter-spacing:0.56vw;color:var(--white);margin-top:2vw;opacity:0;transform:translateY(10px);transition:all 3.2s ease;z-index:2;text-align:center;}
+  .sc11-title.on{opacity:1;transform:translateY(0);}
+  .sc11-title .accent{color:var(--green-bright);}
+  .sc11-tag{font-weight:300;font-size:1.4vw;letter-spacing:0.84vw;text-transform:uppercase;color:var(--gray);margin-top:1.2vw;opacity:0;transition:opacity 3.2s ease;z-index:2;}
+  .sc11-tag.on{opacity:.5;}
+
+  /* ══════ RESPONSIVE OVERRIDES ══════ */
+
+  /* Standard screens (16:9 and similar) — scale down oversized elements */
+  @media (max-aspect-ratio:2.5/1){
+    .sc1-logo-img{height:39.2vh;}
+    .washos-logo{height:77.0vh;}
+    .sc11-washos-img{height:25.2vh;}
+    .sc11-samsung-logo{font-size:clamp(34px,7vh,67px);}
+    .sc11-plus{font-size:clamp(20px,3.5vh,39px);}
+    .sc11-title{font-size:clamp(28px,6.3vh,62px);margin-top:2vh;}
+    .sc11-tag{font-size:clamp(13px,1.96vh,22px);}
+    .sc1-samsung{font-size:2.24vh;letter-spacing:2.8vh;}
+    .sc1-sub{font-size:1.96vh;letter-spacing:1.12vh;margin-top:1.5vh;}
+    .hero-line{font-size:clamp(45px,11.2vh,140px);}
+    .sc2-fade{font-size:clamp(25px,5.6vh,56px);}
+    .sc4-q{font-size:clamp(34px,8.4vh,90px);}
+    .sc4-icon{width:14.0vh;height:14.0vh;}
+    .sc4-icon svg{width:5.6vh;height:5.6vh;}
+    .sc4-icon-lbl{font-size:1.68vh;}
+    .sc4-arrow{font-size:4.2vh;}
+    .sc8-ttl{font-size:clamp(34px,8.4vh,90px);}
+    .sc10-hero{font-size:clamp(39px,9.8vh,118px);}
+    .sc7-phone-frame{width:min(17.64vw,43.12vh);height:min(33.32vw,82.32vh);}
+    .sc7-phone-card{gap:1vh;}
+    .sc7-phone-label{font-size:clamp(11px,1.68vh,20px);}
+    .sc7-lbl,.sc6-lbl,.sc9-lbl{font-size:clamp(13px,2.1vh,22px);}
+    .eco-orbit{width:min(42vw,70vh);height:min(42vw,70vh);}
+    .eco-hub-center{width:min(14vw,22vh);height:min(14vw,22vh);}
+    .eco-node{width:min(12vw,18vh);height:min(12vw,18vh);}
+    .eco-node-lbl{font-size:clamp(10px,1.4vh,17px);}
+    .eco-node svg{width:min(3vw,4.5vh);height:min(3vw,4.5vh);}
+    .eco-hub-center svg{width:min(3.5vw,5.5vh);height:min(3.5vw,5.5vh);}
+    .eco-hub-center .eco-node-lbl{font-size:clamp(10px,1.6vh,20px);}
+    .ops-card{width:min(14.5vw,24vh);padding:min(2vw,3.2vh) min(1.2vw,1.8vh);}
+    .ops-card svg{width:min(5.49vw,8.82vh);height:min(5.49vw,8.82vh);}
+    .ops-card-lbl{font-size:clamp(11px,1.68vh,20px);}
+    .sc9-machine{width:min(7.5vw,13vh);height:min(9.8vw,17vh);}
+    .sc9-drum{width:min(4.2vw,7.2vh);height:min(4.2vw,7.2vh);}
+    .sc9-word{font-size:clamp(32px,7vh,72px);}
+    .sc9-sub{font-size:clamp(11px,1.6vh,18px);}
+    .sc3-gap-text{font-size:clamp(22px,4.2vh,53px);}
+    .feat-item{gap:min(1vw,1.5vh);}
+    .feat-dot{width:min(3.36vw,5.6vh);height:min(3.36vw,5.6vh);}
+    .feat-dot svg{width:min(1.68vw,2.8vh);height:min(1.68vw,2.8vh);}
+    .feat-txt{font-size:clamp(11px,1.96vh,22px);}
+    .sp-w{height:77.0vh;}
+    .washos-sub{font-size:clamp(13px,1.96vh,22px);margin-top:2vh;}
+    .sc11-sam{font-size:clamp(13px,1.96vh,22px);}
+    .sc11-tag{font-size:clamp(13px,1.68vh,20px);}
+    .burst{width:min(98.0vw,156.8vh);height:min(98.0vw,156.8vh);}
+  }
+
+  /* Portrait / mobile */
+  @media (max-aspect-ratio:1/1){
+    .sc2-fade{text-align:center;font-size:clamp(25px,5.6vw,50px);}
+    .hero-line{font-size:clamp(39px,9.8vw,84px);}
+    .phone-wrap,.sc7-phones{flex-wrap:wrap;gap:3vw;}
+    .sc7-phone-frame{width:28.0vw;height:53.2vw;}
+    .sc9-left{width:100%;height:40%;}
+    .sc9-right{width:100%;padding:0;align-items:center;text-align:center;}
+    #sc9{flex-direction:column;}
+    .eco-orbit{width:70vw;height:70vw;}
+    .ops-grid{gap:2vw;}
+    .ops-card{width:22vw;}
+    .sc4-flow{gap:4vw;}
+    .sc4-icon{width:16.8vw;height:16.8vw;}
+    .feat-list{flex-direction:row;flex-wrap:wrap;gap:2vw;}
+  }
+
+  /* ══════ UI ══════ */
+  .prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--green));z-index:200;transition:width .8s ease;}
+  .ctrls{position:fixed;bottom:12px;right:12px;z-index:200;display:flex;gap:5px;}
+  .cb{width:32px;height:32px;border-radius:50%;border:1px solid rgba(76,175,80,.14);background:rgba(4,10,6,.85);backdrop-filter:blur(8px);color:var(--gray);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .3s;}
+  .cb:hover{border-color:var(--green);color:var(--green-bright);}
+  .cnt{position:fixed;bottom:14px;left:14px;font-size:9px;letter-spacing:3px;color:var(--dim);z-index:200;font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+<!-- SC1 — OPENING IMPACT (cinematic water + washers) -->
+<div class="scene active" id="sc1">
+  <!-- Water background -->
+  <div class="sc1-water">
+    <div class="sc1-water-glow"></div>
+    <div class="sc1-ripple"></div><div class="sc1-ripple"></div><div class="sc1-ripple"></div>
+    <div class="sc1-wave"></div><div class="sc1-wave"></div><div class="sc1-wave"></div>
+  </div>
+
+  <!-- Samsung washers — spread across the 12m width, rotating slowly -->
+  <div class="sc1-washer">
+    <div class="washer-body"><div class="washer-panel"></div><div class="washer-dot wdl"></div><div class="washer-dot wdr"></div><div class="washer-drum"><div class="drum-x h"></div><div class="drum-x v"></div></div></div>
+  </div>
+  <div class="sc1-washer">
+    <div class="washer-body"><div class="washer-panel"></div><div class="washer-dot wdl"></div><div class="washer-dot wdr"></div><div class="washer-drum"><div class="drum-x h"></div><div class="drum-x v"></div></div></div>
+  </div>
+  <div class="sc1-washer">
+    <div class="washer-body"><div class="washer-panel"></div><div class="washer-dot wdl"></div><div class="washer-dot wdr"></div><div class="washer-drum"><div class="drum-x h"></div><div class="drum-x v"></div></div></div>
+  </div>
+  <div class="sc1-washer">
+    <div class="washer-body"><div class="washer-panel"></div><div class="washer-dot wdl"></div><div class="washer-dot wdr"></div><div class="washer-drum"><div class="drum-x h"></div><div class="drum-x v"></div></div></div>
+  </div>
+  <div class="sc1-washer">
+    <div class="washer-body"><div class="washer-panel"></div><div class="washer-dot wdl"></div><div class="washer-dot wdr"></div><div class="washer-drum"><div class="drum-x h"></div><div class="drum-x v"></div></div></div>
+  </div>
+
+  <!-- Center text -->
+  <img src="washos-logo.png" alt="Wash OS" class="sc1-logo-img" id="z1a"/>
+  <div class="sc1-samsung" id="z1b">Intelligence in Every Cycle.</div>
+  <div class="sc1-sub" id="z1c">Powered by <img src="whitegoodapps Logo.png" alt="GoodApps, Inc." class="goodapps-logo"/></div>
+</div>
+
+<!-- SC2 — UNIVERSAL TRUTH -->
+<div class="scene" id="sc2">
+  <div class="sc2-col">
+    <div class="sc2-section1" id="z2s1">
+      <div class="hero-line" id="z2a">EVERY <span class="accent">CITY.</span></div>
+      <div class="hero-line" id="z2b">EVERY <span class="accent">COMMUNITY.</span></div>
+      <div class="hero-line" id="z2c">EVERY <span class="accent">DAY.</span></div>
+    </div>
+    <div class="sc2-fade" id="z2d">LAUNDRY IS ONE OF THE MOST<br><span class="accent-text">UNIVERSAL SERVICES</span><br>IN THE WORLD</div>
+  </div>
+</div>
+
+<!-- SC3 — INDUSTRY GAP (illustrated) -->
+<div class="scene" id="sc3">
+  <div class="sp-w">
+    <div class="sp-h sp-L" id="z3a">
+      <div class="old-scene">
+        <div class="old-storefront">
+          <div class="old-awning"></div>
+          <div class="old-sign">Laundry Shop</div>
+          <div class="old-window">
+            <div class="old-washer"><div class="old-washer-drum"></div></div>
+            <div class="old-washer"><div class="old-washer-drum"></div></div>
+            <div class="old-washer"><div class="old-washer-drum"></div></div>
+            <div class="old-washer"><div class="old-washer-drum"></div></div>
+          </div>
+          <div class="old-floor"></div>
+          <div class="old-filter"></div>
+        </div>
+      </div>
+      <span class="sp-tag">Yesterday</span>
+    </div>
+    <div class="sp-divider"></div>
+    <div class="sp-h sp-R" id="z3b">
+      <div class="new-scene">
+        <div class="new-glow-ring"></div>
+        <div class="new-glow-ring"></div>
+        <div class="new-phone">
+          <div class="new-phone-notch"></div>
+          <div class="new-phone-map">
+            <div class="new-phone-dot"></div>
+            <div class="new-phone-dot"></div>
+            <div class="new-phone-dot"></div>
+          </div>
+          <div class="new-phone-line"></div>
+          <div class="new-phone-line"></div>
+          <div class="new-phone-btn"></div>
+        </div>
+      </div>
+      <span class="sp-tag">Tomorrow</span>
+    </div>
+    <div class="vs-b">VS</div>
+  </div>
+  <div class="sc3-gap-text" id="z3c">Customers Have Changed. <span class="dim-text">Laundry Operations Have Not.</span></div>
+</div>
+
+<!-- SC4 — THE OPPORTUNITY -->
+<div class="scene" id="sc4">
+  <div class="sc4-q" id="z4f">What If Every <span class="accent">Laundry Machine</span> Became <span class="accent">Connected</span>?</div>
+  <div class="sc4-flow">
+    <div class="sc4-icon" id="z4a">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="2" width="18" height="20" rx="3" stroke="var(--green)" stroke-width="1.5"/><circle cx="12" cy="14" r="5" stroke="var(--green)" stroke-width="1.5"/></svg>
+      <span class="sc4-icon-lbl">Machine</span>
+    </div>
+    <div class="sc4-arrow" id="z4b">→</div>
+    <div class="sc4-icon" id="z4c">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 7c-2.2 0-4 1.5-4 3.4 0 1.8 1.5 3.3 3.4 3.3h13.2c1.9 0 3.4-1.5 3.4-3.3C22 8.5 20.2 7 18 7c-.4-2.3-2.4-4-4.8-4-2 0-3.7 1.2-4.4 2.9C7.5 5.6 6 6.7 6 7z" stroke="var(--green)" stroke-width="1.5"/></svg>
+      <span class="sc4-icon-lbl">Cloud</span>
+    </div>
+    <div class="sc4-arrow" id="z4d">→</div>
+    <div class="sc4-icon" id="z4e">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="2" width="12" height="20" rx="3" stroke="var(--green)" stroke-width="1.5"/><line x1="10" y1="18" x2="14" y2="18" stroke="var(--green)" stroke-width="1.5"/></svg>
+      <span class="sc4-icon-lbl">Phone</span>
+    </div>
+  </div>
+</div>
+
+<!-- SC5 — WASH OS REVEAL -->
+<div class="scene" id="sc5">
+  <div class="burst" id="z5burst"></div>
+  <img src="washos-logo.png" alt="Wash OS" class="washos-logo" id="z5a"/>
+  <div class="washos-sub" id="z5b">The Operating System for Modern Laundry</div>
+  <div class="sc5-powered" id="z5c">Powered by <img src="whitegoodapps Logo.png" alt="GoodApps, Inc." class="goodapps-logo"/></div>
+</div>
+
+<!-- SC6 — ECOSYSTEM (orbital circle) -->
+<div class="scene" id="sc6">
+  <div class="sc6-lbl" id="z6lbl">The Wash OS Ecosystem</div>
+  <div class="eco-orbit">
+    <!-- Rotating decorative rings -->
+    <div class="eco-ring"></div>
+    <div class="eco-ring"></div>
+
+    <!-- Connecting arcs (SVG lines from nodes to center) -->
+    <div class="eco-connectors">
+      <svg viewBox="0 0 420 420" preserveAspectRatio="xMidYMid meet">
+        <!-- Top node to center -->
+        <line class="eco-arc" id="z6ar1" x1="210" y1="60" x2="210" y2="175"/>
+        <!-- Bottom-left node to center -->
+        <line class="eco-arc" id="z6ar2" x1="60" y1="330" x2="175" y2="240"/>
+        <!-- Bottom-right node to center -->
+        <line class="eco-arc" id="z6ar3" x1="360" y1="330" x2="245" y2="240"/>
+        <!-- Outer ring connecting all three nodes -->
+        <path class="eco-arc" id="z6ar4" d="M210 55 Q380 55 365 335 Q210 420 55 335 Q40 55 210 55" style="stroke-dasharray:8 6;"/>
+      </svg>
+    </div>
+
+    <!-- Center hub — Wash OS Platform -->
+    <div class="eco-hub-center" id="z6b">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 7c-2.2 0-4 1.5-4 3.4 0 1.8 1.5 3.3 3.4 3.3h13.2c1.9 0 3.4-1.5 3.4-3.3C22 8.5 20.2 7 18 7c-.4-2.3-2.4-4-4.8-4-2 0-3.7 1.2-4.4 2.9C7.5 5.6 6 6.7 6 7z" stroke="var(--green-bright)" stroke-width="1.5"/></svg>
+      <span class="eco-node-lbl">Wash OS</span>
+    </div>
+
+    <!-- Orbital node: Customers (top center) -->
+    <div class="eco-node eco-pos-top" id="z6a">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="var(--green)" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="var(--green)" stroke-width="1.5"/></svg>
+      <span class="eco-node-lbl">Customers</span>
+    </div>
+
+    <!-- Orbital node: Laundry Shops (bottom-left) -->
+    <div class="eco-node eco-pos-bl" id="z6c">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 10l1-6h16l1 6M3 10v10h18V10M3 10h18" stroke="var(--green)" stroke-width="1.5"/><rect x="9" y="14" width="6" height="6" stroke="var(--green)" stroke-width="1.5"/></svg>
+      <span class="eco-node-lbl">Laundry Shops</span>
+    </div>
+
+    <!-- Orbital node: Samsung Machines (bottom-right) -->
+    <div class="eco-node eco-pos-br" id="z6d">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="2" width="18" height="20" rx="3" stroke="var(--green)" stroke-width="1.5"/><circle cx="12" cy="14" r="5" stroke="var(--green)" stroke-width="1.5"/></svg>
+      <span class="eco-node-lbl">Samsung Machines</span>
+    </div>
+  </div>
+</div>
+
+<!-- SC7 — CUSTOMER EXPERIENCE (real screenshots) -->
+<div class="scene" id="sc7">
+  <div class="sc7-lbl" id="z7lbl">Customer Experience</div>
+  <div class="sc7-phones">
+    <div class="sc7-phone-card" id="z7f1">
+      <div class="sc7-phone-frame">
+        <img src="screenshot-nearby.png" alt="Find Laundry Shops" class="sc7-screenshot"/>
+      </div>
+      <div class="sc7-phone-label">Find Laundry Shops</div>
+    </div>
+    <div class="sc7-phone-card" id="z7f2">
+      <div class="sc7-phone-frame">
+        <img src="screenshot-tracking.png" alt="Book Machines" class="sc7-screenshot"/>
+      </div>
+      <div class="sc7-phone-label">Book Machines</div>
+    </div>
+    <div class="sc7-phone-card" id="z7f3">
+      <div class="sc7-phone-frame">
+        <img src="screenshot-payment.png" alt="Track Progress" class="sc7-screenshot"/>
+      </div>
+      <div class="sc7-phone-label">Track Progress</div>
+    </div>
+    <div class="sc7-phone-card" id="z7f4">
+      <div class="sc7-phone-frame">
+        <img src="screenshot-loyalty.png" alt="Pay Digitally" class="sc7-screenshot"/>
+      </div>
+      <div class="sc7-phone-label">Pay Digitally</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SC8 — SHOP OPERATIONS -->
+<div class="scene" id="sc8">
+  <div class="sc8-ttl" id="z8a">A Complete <span class="accent">Operating System</span> For Laundry Shops</div>
+  <div class="ops-grid">
+    <div class="ops-card" id="z8b">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="var(--green)" stroke-width="1.5"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="var(--green)" stroke-width="1.5"/><path d="M9 12h6M9 16h4" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="ops-card-lbl">Orders</div>
+    </div>
+    <div class="ops-card" id="z8c">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" stroke="var(--green)" stroke-width="1.5"/><path d="M2 10h20" stroke="var(--green)" stroke-width="1.5"/><circle cx="17" cy="15" r="1.5" fill="var(--green)"/></svg>
+      <div class="ops-card-lbl">Payments</div>
+    </div>
+    <div class="ops-card" id="z8d">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M20 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1z" stroke="var(--green)" stroke-width="1.5"/><path d="M16 7V5a4 4 0 00-8 0v2" stroke="var(--green)" stroke-width="1.5"/><circle cx="12" cy="13" r="2" stroke="var(--green)" stroke-width="1.5"/></svg>
+      <div class="ops-card-lbl">Inventory</div>
+    </div>
+    <div class="ops-card" id="z8e">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4z" stroke="var(--green)" stroke-width="1.5"/><path d="M4 9h16M9 4v16" stroke="var(--green)" stroke-width="1.5"/><path d="M13 13h4M13 16h2" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="ops-card-lbl">Receipts</div>
+    </div>
+    <div class="ops-card" id="z8f">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10l4-3v13M10 20V8l4-3v15M16 20V6l4-3v17" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="ops-card-lbl">Analytics</div>
+    </div>
+  </div>
+</div>
+
+<!-- SC9 — SMART MACHINES -->
+<div class="scene" id="sc9">
+  <div class="sc9-left">
+    <div class="sc9-machines" id="z9m">
+      <div class="sc9-machine">
+        <div class="sc9-panel"></div>
+        <div class="sc9-drum"></div>
+        <div class="sc9-glow-line"></div>
+      </div>
+      <div class="sc9-machine">
+        <div class="sc9-panel"></div>
+        <div class="sc9-drum"></div>
+        <div class="sc9-glow-line"></div>
+      </div>
+      <div class="sc9-machine">
+        <div class="sc9-panel"></div>
+        <div class="sc9-drum"></div>
+        <div class="sc9-glow-line"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sc9-right">
+    <div class="sc9-lbl" id="z9lbl">Samsung Smart Machines</div>
+    <div class="sc9-words">
+      <div class="sc9-word" id="z9a">Connected</div>
+      <div class="sc9-word" id="z9b">Intelligent</div>
+      <div class="sc9-word" id="z9c">Monitored</div>
+    </div>
+    <div class="sc9-sub" id="z9d">Status · Cycle Progress · Alerts — all through the platform</div>
+  </div>
+</div>
+
+<!-- SC10 — INDUSTRY TRANSFORMATION -->
+<div class="scene" id="sc10">
+  <div class="map-bg" id="z10map"></div>
+  <div class="sc10-hero" id="z10a">Laundry Is Becoming A <span class="accent">Digital Service Network</span></div>
+</div>
+
+<!-- SC11 — CLOSING -->
+<div class="scene" id="sc11">
+  <div class="sc11-glow" id="z11glow"></div>
+  <div class="sc11-washos-logo" id="z11a">
+    <img src="washos-logo.png" alt="Wash OS" class="washos-logo" id="z11logo"/>
+  </div>
+  <div class="sc11-ecosystem" id="z11b">The Wash OS Ecosystem</div>
+  <div class="sc11-eco-flow" id="z11eco">
+    <span class="sc11-eco-node">Customers</span>
+    <span class="sc11-eco-arrow">→</span>
+    <span class="sc11-eco-node sc11-eco-hub">Wash OS</span>
+    <span class="sc11-eco-arrow">→</span>
+    <span class="sc11-eco-node">Laundry Shops</span>
+    <span class="sc11-eco-arrow">→</span>
+    <span class="sc11-eco-node">Samsung Machines</span>
+  </div>
+  <div class="sc11-powered" id="z11c">Powered by <img src="whitegoodapps Logo.png" alt="GoodApps, Inc." class="goodapps-logo"/></div>
+</div>
+
+</div><!-- /stage -->
+
+<div class="prog" id="prog"></div>
+<div class="ctrls"><button class="cb" id="bP">◂</button><button class="cb" id="bA">II</button><button class="cb" id="bN">▸</button></div>
+<div class="cnt" id="cnt">01 / 11</div>
+
+<script>
+const T=11,S=[];
+for(let i=1;i<=T;i++)S.push(document.getElementById('sc'+i));
+let cur=0,play=true,tmr=null;
+
+const dur=[
+  9000,  // 1  Opening (cinematic water + washers)
+  12000, // 2  Universal Truth
+  11000, // 3  Industry Gap
+  11000, // 4  Opportunity
+  12000, // 5  WASH OS reveal
+  12000, // 6  Ecosystem
+  12000, // 7  Customer Experience
+  10000, // 8  Shop Operations
+  11000, // 9  Smart Machines
+  10000, // 10 Industry Transformation
+  10000  // 11 Close
+];
+
+// Particles for atmospheric scenes (SC5 WASH OS reveal, SC11 closing)
+[4,10].forEach(i=>{for(let j=0;j<24;j++){
+  const p=document.createElement('div');p.className='mist';
+  p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';
+  p.style.setProperty('--mx',(Math.random()*150-75)+'px');
+  p.style.setProperty('--my',(Math.random()*-50-10)+'px');
+  p.style.setProperty('--ex',(Math.random()*200-100)+'px');
+  p.style.setProperty('--ey',(Math.random()*-80-20)+'px');
+  p.style.animationDelay=(Math.random()*12)+'s';
+  p.style.animationDuration=(10+Math.random()*8)+'s';
+  S[i].appendChild(p);
+}});
+
+// SC1: Water streaks flowing horizontally across the wall
+(function(){
+  const water=S[0].querySelector('.sc1-water');
+  // Horizontal streaks at various heights
+  for(let i=0;i<14;i++){
+    const s=document.createElement('div');s.className='sc1-streak';
+    s.style.top=(15+Math.random()*70)+'%';
+    s.style.left='-30%';
+    s.style.width=(20+Math.random()*40)+'%';
+    s.style.animationDelay=(Math.random()*12)+'s';
+    s.style.animationDuration=(8+Math.random()*10)+'s';
+    water.appendChild(s);
+  }
+  // Water droplets floating near the washers
+  const washers=S[0].querySelectorAll('.sc1-washer');
+  washers.forEach(w=>{
+    for(let j=0;j<5;j++){
+      const d=document.createElement('div');d.className='sc1-drop';
+      d.style.left=(20+Math.random()*60)+'%';
+      d.style.top=(30+Math.random()*40)+'%';
+      d.style.setProperty('--dy',(-30-Math.random()*60)+'px');
+      d.style.setProperty('--dx',(Math.random()*40-20)+'px');
+      d.style.animationDelay=(Math.random()*6)+'s';
+      d.style.animationDuration=(4+Math.random()*5)+'s';
+      w.appendChild(d);
+    }
+  });
+})();
+
+// Map dots / lines for SC10
+(function(){
+  const mb=document.getElementById('z10map');
+  for(let i=0;i<60;i++){
+    const d=document.createElement('div');d.className='map-dot';
+    d.style.left=(5+Math.random()*90)+'%';d.style.top=(10+Math.random()*80)+'%';
+    mb.appendChild(d);
+  }
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');p.className='map-pulse';
+    p.style.left=(10+Math.random()*80)+'%';p.style.top=(15+Math.random()*70)+'%';
+    p.style.animationDelay=(Math.random()*3.5)+'s';
+    mb.appendChild(p);
+  }
+  for(let i=0;i<25;i++){
+    const l=document.createElement('div');l.className='map-line';
+    l.style.left=(5+Math.random()*70)+'%';l.style.top=(15+Math.random()*70)+'%';
+    l.style.width=(80+Math.random()*200)+'px';
+    l.style.transform='rotate('+(Math.random()*360)+'deg)';
+    mb.appendChild(l);
+  }
+})();
+
+const anim={
+  0:[[1200,'z1a'],[3500,'z1b'],[5500,'z1c']],
+  1:[[800,'z2a'],[2400,'z2b'],[4000,'z2c']],
+  2:[[800,'z3a'],[2200,'z3b'],[5500,'z3c']],
+  3:[[800,'z4a'],[1200,'z4b'],[1800,'z4c'],[2200,'z4d'],[2800,'z4e'],[5000,'z4f']],
+  4:[[1600,'z5burst'],[1800,'z5a'],[5500,'z5b'],[7000,'z5c']],
+  5:[[800,'z6lbl'],[2000,'z6b'],[3200,'z6a'],[4000,'z6c'],[4800,'z6d'],[5600,'z6ar1'],[5800,'z6ar2'],[6000,'z6ar3'],[6200,'z6ar4']],
+  6:[[800,'z7lbl'],[1600,'z7f1'],[1800,'z7f2'],[2000,'z7f3'],[2200,'z7f4'],[2800,'z7feat']],
+  7:[[1000,'z8a'],[3000,'z8b'],[3600,'z8c'],[4200,'z8d'],[4800,'z8e'],[5400,'z8f']],
+  8:[[800,'z9lbl'],[1800,'z9m'],[3800,'z9a'],[5000,'z9b'],[6200,'z9c'],[7500,'z9d']],
+  9:[[1200,'z10map'],[2800,'z10a']],
+  10:[[1200,'z11glow'],[2400,'z11a'],[3800,'z11b'],[5800,'z11c']]
+};
+
+let act=[];
+
+function show(i){
+  act.forEach(t=>clearTimeout(t));act=[];
+  document.querySelectorAll('.on').forEach(el=>el.classList.remove('on'));
+  const br=document.getElementById('z5burst');if(br)br.classList.remove('on','dim');
+
+  // Reset SC9 machines
+  document.querySelectorAll('.sc9-machine').forEach(m=>m.classList.remove('on'));
+  // Reset SC7 featured
+  document.querySelectorAll('.sc7-phone-card').forEach(c=>c.classList.remove('featured'));
+  // Reset SC2 section1
+  const s1=document.getElementById('z2s1');if(s1)s1.classList.remove('off');
+
+  S.forEach(s=>s.classList.remove('active'));
+  S[i].classList.add('active');cur=i;
+  document.getElementById('cnt').textContent=String(i+1).padStart(2,'0')+' / '+T;
+  document.getElementById('prog').style.width=((i+1)/T*100)+'%';
+
+  (anim[i]||[]).forEach(([d,id])=>{
+    act.push(setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el){
+        el.classList.add('on');
+        // For SC9 machines group — animate children
+        if(id==='z9m'){
+          el.querySelectorAll('.sc9-machine').forEach((m,idx)=>{
+            setTimeout(()=>m.classList.add('on'),idx*400);
+          });
+        }
+      }
+    },d));
+  });
+
+  // SC2 — fade out section 1, fade in section 2
+  if(i===1){
+    act.push(setTimeout(()=>{const s=document.getElementById('z2s1');if(s)s.classList.add('off');},6000));
+    act.push(setTimeout(()=>{const d=document.getElementById('z2d');if(d)d.classList.add('on');},7500));
+  }
+
+  // SC7 — cycle featured phone one at a time
+  if(i===6){
+    const phones=['z7f1','z7f2','z7f3','z7f4'];
+    const featDelay=2800; // when cycling starts
+    const perPhone=2200; // time each phone stays featured
+    phones.forEach((pid,idx)=>{
+      // Add featured class
+      act.push(setTimeout(()=>{
+        phones.forEach(p=>{const e=document.getElementById(p);if(e)e.classList.remove('featured');});
+        const el=document.getElementById(pid);if(el)el.classList.add('featured');
+      },featDelay+idx*perPhone));
+    });
+  }
+
+  // WASH OS burst dim + scatter
+  if(i===4){
+    act.push(setTimeout(()=>{const b=document.getElementById('z5burst');if(b)b.classList.add('dim');},5800));
+    act.push(setTimeout(()=>{
+      const sc=document.getElementById('sc5');
+      for(let j=0;j<45;j++){
+        const p=document.createElement('div');p.className='scatter';p.style.left='50%';p.style.top='50%';
+        const ang=Math.random()*Math.PI*2,dist=100+Math.random()*400;
+        const dx=Math.cos(ang)*dist,dy=Math.sin(ang)*dist*.4,spd=2+Math.random()*2;
+        p.style.transition=`all ${spd}s cubic-bezier(.16,1,.3,1)`;
+        sc.appendChild(p);
+        requestAnimationFrame(()=>{p.style.opacity='.7';p.style.transform=`translate(${dx}px,${dy}px)`;
+          setTimeout(()=>{p.style.opacity='0';},spd*550);
+          setTimeout(()=>{p.remove();},spd*1200);
+        });
+      }
+    },1700));
+  }
+}
+
+function nx(){show((cur+1)%T);}
+function pv(){show((cur-1+T)%T);}
+function go(){stop();play=true;document.getElementById('bA').textContent='II';tmr=setTimeout(()=>{nx();go();},dur[cur]);}
+function stop(){play=false;document.getElementById('bA').textContent='▸';if(tmr)clearTimeout(tmr);}
+
+document.getElementById('bN').onclick=()=>{stop();nx();};
+document.getElementById('bP').onclick=()=>{stop();pv();};
+document.getElementById('bA').onclick=()=>{play?stop():go();};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();stop();nx();}
+  if(e.key==='ArrowLeft'){stop();pv();}
+});
+
+show(0);go();
+</script>
+</body>
+</html>
